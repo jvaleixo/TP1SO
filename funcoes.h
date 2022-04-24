@@ -1,8 +1,5 @@
 
-#ifdef _XOPEN_SOURCE 
-#undef _XOPEN_SOURCE
-#define _XOPEN_SOURCE 200112L
-#endif
+#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
@@ -13,6 +10,6 @@
 #ifndef _H_TESTE
 #define _H_TESTE
  
-void helloWorld(void);
+void parsecomando(char *comandos, char **argv);
 void promptprint(void);
 #endif
