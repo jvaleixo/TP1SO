@@ -10,22 +10,31 @@
 #define TRUE 1 
 
 int main(){
-    char comandos[1024];
+    char comandos[512];
     char *argv[MAX_NUM_PARAMS+1]; 
-    /*int i, n;*/
+    int i, n;
     while(TRUE){
         promptprint();
         
-        if(fgets(comandos, sizeof(comandos), stdin) == NULL) break; /* sair no ctrl D*/
+        if(fgets(comandos, sizeof(comandos), stdin) == NULL) exit(0); /* sair no ctrl D*/
 
-        /*n = parsecomando(comandos, argv);*/
-        parsecomando(comandos, argv);
-       
-        if (strcmp(argv[0], "fim") == 0) exit(0); /* sai do programa*/
+        n = parsecomando(comandos, argv);
         
+        if (strcmp(argv[0], "fim") == 0){/* sai do programa*/ 
+            free(argv[0]);
+            exit(0);
+        } 
+
         if(strcmp(argv[0],"\0") == 0)
             promptprint();    
+
         executa(argv);
+        
+        
+        for (i = 0; i < n+1; i++){
+            free(argv[i]);
+        }
+        
     }
     return (0);
 }
