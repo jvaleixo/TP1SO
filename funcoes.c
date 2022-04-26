@@ -5,38 +5,50 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <string.h>
+#include "funcoes.h"
 
-void parsecomando(char *comandos, char **argv){
-    int i = 0;
-    /*const char s[1] = " ";*/
-    char *token;
-    token = strtok(comandos," ");
-    while(token != NULL){
-        argv[i] = token;
-        i++;
-        /*token = strtok(NULL," ");*/
-    }
+int parsecomando(char *comandos, char **argv){
+     int i = 0;
+     char *token;
+     int n = -1;
+     
+     if(comandos[strlen(comandos)-1] == '\n') { /* troca ultimos caracteres*/    
+          comandos[strlen(comandos)-1] = '\0';
+     }
+
+     token = strtok(comandos," ");
+ 
+     while(token && i < MAX_NUM_PARAMS){   
+          argv[i] = strdup(token);
+          /*printf("%d - %s\n", i, argv[i]);*/
+          i++;
+          n++;
+          token = strtok(NULL, " ");
+     }
+     argv[i] = NULL;
+     return n;
 }
+
 void  executa(char **argv)
 {
-     pid_t  pid;
-     int    status;
-     
-     if ((pid = fork()) < 0) {     /* fork a child process           */
-          printf("*** ERROR: forking child process failed\n");
+     pid_t pid;
+     int status;
+
+     if ((pid = fork()) < 0) {/*usa o fork*/
+          printf("erro no fork\n");
           exit(1);
      }
-     else if (pid == 0) {          /* for the child process:         */
-          if (execvp(*argv, argv) < 0) {     /* execute the command  */
-               printf("*** ERROR: exec failed\n");
+     else if (pid == 0) {/*filho*/
+          if (execvp(argv[0], argv) < 0) {/* execulta o comando */
+               printf("erro no exec\n");
                exit(1);
           }
      }
-     else {                                  /* for the parent:      */
-          while (wait(&status) != pid)       /* wait for completion  */
-               ;
+     else {/* pai */
+          waitpid(pid, &status, 0);
      }
 }
+
 void promptprint(void){
     printf("Qual o seu comando? ");
 }

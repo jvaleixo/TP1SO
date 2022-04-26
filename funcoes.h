@@ -1,4 +1,3 @@
-
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
@@ -9,8 +8,10 @@
 #define TRUE 1
 #ifndef _H_TESTE
 #define _H_TESTE
+
+#define MAX_NUM_PARAMS 10
  
-void parsecomando(char *comandos, char **argv);
+int parsecomando(char *comandos, char **argv);
 void executa(char **argv);
 void promptprint(void);
 #endif
