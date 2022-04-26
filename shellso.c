@@ -11,19 +11,21 @@
 int main(){
     char comandos[1024];
     char *argv[100];
-    FILE * pFile;
-    pFile = fopen("arquivo.txt","w");
+    /*FILE * pFile;
+    pFile = fopen("arquivo.txt","w"); */
     /*pid_t cpid, w;*/
     /*int status,j;*/
     /*char a[1000];*/
     while(TRUE){
         promptprint();
-        scanf("%s[^\n]",comandos);
+        /*scanf("%s[^\n]",comandos);*/
+        gets(comandos);
         parsecomando(comandos,argv);
-        fputs(*argv,pFile);
+        /* fputs(*argv,pFile); */
         if(strcmp(argv[0],"fim") == 0)
             exit(0);
-        /*cpid = fork();*/
+        executa(argv);
+        /*cpid = fork();
        /* if(cpid != 0){
             do {
             printf("\n entrei no do\n");

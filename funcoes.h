@@ -11,5 +11,6 @@
 #define _H_TESTE
  
 void parsecomando(char *comandos, char **argv);
+void executa(char **argv);
 void promptprint(void);
 #endif
