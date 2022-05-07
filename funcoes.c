@@ -18,9 +18,14 @@ int parsecomando(char *comandos, char **argv){
 
      token = strtok(comandos," ");
  
-     while(token && i < MAX_NUM_PARAMS){   
-          argv[i] = strdup(token);
-          /*printf("%d - %s\n", i, argv[i]);*/
+     while(token && i < MAX_NUM_PARAMS){
+          /*if(strcmp(token, "=>") == 0)
+               argv[i] = strdup(">");
+          else if(strcmp(token, "<=") == 0)
+               argv[i] = strdup("<");
+          else*/
+               argv[i] = strdup(token);
+          
           i++;
           n++;
           token = strtok(NULL, " ");
