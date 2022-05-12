@@ -34,6 +34,37 @@ int parsecomando(char *comandos, char **argv){
      return n;
 }
 
+int parsepipe(char ***argvv, char **argv, int *index, int n){
+     int i, j, k, l;
+     j = 0;
+     for (i = 0; i < n; i++){
+          if (strcmp(argv[i], "|") == 0) {
+               j++;
+          }       
+     }
+
+     for (k = 0; k < j + 1; k++){
+          argvv[k] = (char**)malloc(15*sizeof(char*));
+     }
+     
+     k = 0;
+     l = 0;
+
+     for (i = 0; j > 0 && i < n+1; i++){
+          if (strcmp(argv[i], "|") == 0) {
+               argvv[k][l] = NULL;
+               index[k] = l;
+               l=0;
+               k++;
+          }else{
+               argvv[k][l] = strdup(argv[i]);
+               l++;
+          }
+     }
+     index[k] = l;
+     return j;
+}
+
 void  executa(char **argv)
 {
      pid_t pid;
