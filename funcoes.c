@@ -91,33 +91,37 @@ void  executa(char **argv)
 int executapipe(char **argv1, char **argv2){
      int fd[2];
      int status;
-     char *error;
      pid_t pid;
      pipe(fd);
      
+     /*processo filho 1*/
      pid = fork();
-     
-     if (pid < 0) {
-          error = strerror(errno);
-          perror("fork");
-          return 1;
-     } 
-     if (pid == 0) { /*filho*/
-          close(fd[1]);
-          dup2(fd[0], 0);
-          execvp(argv2[0], argv2);
-          error = strerror(errno);
-          printf("unknown command\n");
-          return 0;
-     } else { /*pai*/
+     if(pid < 0){
+          printf("erro no fork\n");
+     }else if(pid == 0){
           close(fd[0]);
-          dup2(fd[1], 1);
+          dup2(fd[1], 1); /*escreve a saida no pipe*/
           execvp(argv1[0], argv1);
-          close(fd[1]);
-          error = strerror(errno);
-          printf("unknown command\n");
-          return 0;
      }
+
+     /*processo filho 2*/
+     pid = fork();
+     if(pid < 0){
+          printf("erro no fork\n");
+     }else if(pid == 0){
+          close(fd[1]);
+          dup2(fd[0], 0); /*le a entrada do pipe*/
+          execvp(argv2[0], argv2);
+     }
+
+     /*processo pai*/
+     close(fd[0]);
+     close(fd[1]);
+
+     waitpid(-1, &status, 0);
+     waitpid(-1, &status, 0);
+
+     return 0;
 }
 
 void promptprint(void){
