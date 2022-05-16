@@ -19,7 +19,9 @@ int parsecomando(char *comandos, char **argv){
      }
 
      token = strtok(comandos," ");
- 
+     
+
+     /*trasforma a string em um array de argumentos*/    
      while(token && i < MAX_NUM_PARAMS){
           argv[i] = strdup(token);
           i++;
@@ -30,6 +32,7 @@ int parsecomando(char *comandos, char **argv){
      return n;
 }
 
+/* separa os argumentos em pipes para serem execultados*/    
 int parsepipe(char ***argvv, char **argv, int *index, int n){
      int i, j, k, l;
      j = 0;
@@ -63,6 +66,7 @@ int parsepipe(char ***argvv, char **argv, int *index, int n){
      return j;
 }
 
+/*retorna o tipo de redirecionamento esperado*/    
 int redirecionamento(char **argv){
      int i;
      for (i = 0; argv[i] != NULL; i++){
@@ -77,6 +81,7 @@ int redirecionamento(char **argv){
      return 0;
 }
 
+/*executa do redirecionamendo das entradas e saidas padrão*/    
 int entrada_saida(char **argv, int *file){
      int r, f, i;
      f = 0;
@@ -85,19 +90,20 @@ int entrada_saida(char **argv, int *file){
           f++;
      }
      r = redirecionamento(argv); 
+ 
      if (r == 0){
           return 0;
      }
 
-    printf("\n\n%s\n\n", argv[f-1]);
-     
+     /*cria ou abre um arquivo para escrita e associa ele a saida padrão*/    
      if (r == 1){
           file[0] = open(argv[f-1], O_WRONLY | O_CREAT, 0777);
           dup2(file[0], 1);
           close(file[0]);
           return 1;         
      }
-     
+
+     /*abre um arquivo para leitura e associa ele a entrada padrão*/    
      if(r == 2){
           file[0] = open(argv[f-1], O_RDONLY, 0777);
           if (file[0] == -1){

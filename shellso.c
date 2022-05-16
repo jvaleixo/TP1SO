@@ -32,17 +32,17 @@ int main(){
         }
         n = parsecomando(comandos, argv);
 
-        if(argv[0] == NULL){/*continue quando aperta enter sem comandos*/    
+        if(argv[0] == NULL){/*continue quando aperta enter sem comandos*/
             free(argv[0]);
             free(argvv);
             continue;
         }
 
-        if (strcmp(argv[0], "fim") == 0){/* sai do programa*/ 
+        if (strcmp(argv[0], "fim") == 0){/* sai do programa*/
             free(argv[0]);
             free(argvv);
             exit(0);
-        } 
+        }
 
         j = parsepipe(argvv, argv, index, n);
 
@@ -57,7 +57,7 @@ int main(){
         for (i = 0; i < j; i++){
             for (k = 0; k <= index[i]; k++){
                 free(argvv[i][k]);
-            }   
+            }
             free(argvv[i]);
         }
         free(argvv);
