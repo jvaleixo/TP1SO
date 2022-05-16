@@ -16,4 +16,6 @@ int parsepipe(char ***argvv, char **argv, int *index, int n);
 int executapipe(char **argv1, char **argv2);
 void executa(char **argv);
 void promptprint(void);
+int redirecionamentos(char **argv);
+int entrada_saida(char **argv, int *file);
 #endif
