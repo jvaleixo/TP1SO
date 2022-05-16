@@ -13,6 +13,7 @@
  
 int parsecomando(char *comandos, char **argv);
 int parsepipe(char ***argvv, char **argv, int *index, int n);
+int executapipe(char **argv1, char **argv2);
 void executa(char **argv);
 void promptprint(void);
 #endif

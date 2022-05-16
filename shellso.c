@@ -17,6 +17,7 @@ int main(){
     int index[15];
     while(TRUE){
         promptprint();
+        j = 0;
         argvv = (char***)malloc(15*sizeof(char**));
         
         for (i = 0; i < 15; i++)
@@ -46,17 +47,10 @@ int main(){
         j = parsepipe(argvv, argv, index, n);
 
         if (j > 0){
-            for (i = 0; i < j+1; i++){   
-                printf("%d - ", i);
-                for (k = 0; k < index[i]; k++){
-                    printf(" -%s", argvv[i][k]);
-                }
-                printf("\n");
-            }
-            
+            executapipe(argvv[0], argvv[1]);
         }else
             executa(argv);
-           
+        
         for (i = 0; i < n+1; i++){
             free(argv[i]);
         }

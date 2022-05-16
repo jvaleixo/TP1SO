@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <errno.h>
 #include <string.h>
 #include "funcoes.h"
 
@@ -49,8 +50,8 @@ int parsepipe(char ***argvv, char **argv, int *index, int n){
      
      k = 0;
      l = 0;
-
-     for (i = 0; j > 0 && i < n+1; i++){
+     
+     for (i = 0; i < n+1; i++){
           if (strcmp(argv[i], "|") == 0) {
                argvv[k][l] = NULL;
                index[k] = l;
@@ -61,7 +62,9 @@ int parsepipe(char ***argvv, char **argv, int *index, int n){
                l++;
           }
      }
+     argvv[k][l] = NULL;
      index[k] = l;
+     
      return j;
 }
 
@@ -85,6 +88,38 @@ void  executa(char **argv)
      }
 }
 
+int executapipe(char **argv1, char **argv2){
+     int fd[2];
+     int status;
+     char *error;
+     pid_t pid;
+     pipe(fd);
+     
+     pid = fork();
+     
+     if (pid < 0) {
+          error = strerror(errno);
+          perror("fork");
+          return 1;
+     } 
+     if (pid == 0) { /*filho*/
+          close(fd[1]);
+          dup2(fd[0], 0);
+          execvp(argv2[0], argv2);
+          error = strerror(errno);
+          printf("unknown command\n");
+          return 0;
+     } else { /*pai*/
+          close(fd[0]);
+          dup2(fd[1], 1);
+          execvp(argv1[0], argv1);
+          close(fd[1]);
+          error = strerror(errno);
+          printf("unknown command\n");
+          return 0;
+     }
+}
+
 void promptprint(void){
-    printf("Qual o seu comando? ");
+    printf("$ ");
 }
