@@ -26,41 +26,42 @@ int main(){
         }
         
         if(fgets(comandos, sizeof(comandos), stdin) == NULL){/* sair no ctrl D*/
-            free(argv[0]);
             free(argvv);
             exit(0);
         }
         n = parsecomando(comandos, argv);
 
         if(argv[0] == NULL){/*continue quando aperta enter sem comandos*/
-            free(argv[0]);
             free(argvv);
             continue;
         }
 
         if (strcmp(argv[0], "fim") == 0){/* sai do programa*/
-            free(argv[0]);
             free(argvv);
+            free(argv[0]);
             exit(0);
         }
 
         j = parsepipe(argvv, argv, index, n);
 
+        /* define se usa o pipe ou o processo unico*/
         if (j > 0){
             executapipe(argvv[0], argvv[1]);
         }else
             executa(argv);
+
         
         for (i = 0; i < n+1; i++){
             free(argv[i]);
         }
-        for (i = 0; i < j; i++){
-            for (k = 0; k <= index[i]; k++){
+        for (i = 0; i < j+1; i++){
+            for (k = 0; k < index[i]; k++){
                 free(argvv[i][k]);
             }
             free(argvv[i]);
         }
         free(argvv);
+    
     }
     return (0);
 }

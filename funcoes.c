@@ -10,16 +10,15 @@
 #include "funcoes.h"
 
 int parsecomando(char *comandos, char **argv){
-     int i = 0;
-     char *token;
-     int n = -1;
+     int i = 0; /* cotrola o loop */
+     char *token; 
+     int n = -1; 
      
      if(comandos[strlen(comandos)-1] == '\n') { /* troca ultimos caracteres*/    
           comandos[strlen(comandos)-1] = '\0';
      }
 
      token = strtok(comandos," ");
-     
 
      /*trasforma a string em um array de argumentos*/    
      while(token && i < MAX_NUM_PARAMS){
@@ -29,19 +28,22 @@ int parsecomando(char *comandos, char **argv){
           token = strtok(NULL, " ");
      }
      argv[i] = NULL;
-     return n;
+     return n; /* usado na main para definir o numero de parametros passado para o shell*/
 }
 
 /* separa os argumentos em pipes para serem execultados*/    
 int parsepipe(char ***argvv, char **argv, int *index, int n){
      int i, j, k, l;
      j = 0;
+
+     /* conta o numero de pipes no vetor de parametros */
      for (i = 0; i < n; i++){
           if (strcmp(argv[i], "|") == 0) {
                j++;
           }       
      }
 
+     /* aloca a memoria para j + 1 listas de comandos */
      for (k = 0; k < j + 1; k++){
           argvv[k] = (char**)malloc(15*sizeof(char*));
      }
@@ -49,6 +51,7 @@ int parsepipe(char ***argvv, char **argv, int *index, int n){
      k = 0;
      l = 0;
      
+     /* separa o array de comandos em listas de comandos separados */
      for (i = 0; i < n+1; i++){
           if (strcmp(argv[i], "|") == 0) {
                argvv[k][l] = NULL;
@@ -63,17 +66,20 @@ int parsepipe(char ***argvv, char **argv, int *index, int n){
      argvv[k][l] = NULL;
      index[k] = l;
      
+     /* retorna o numero de pipes */
      return j;
 }
 
-/*retorna o tipo de redirecionamento esperado*/    
+/*retorna o tipo de redirecionamento a ser utilizado*/    
 int redirecionamento(char **argv){
      int i;
+
      for (i = 0; argv[i] != NULL; i++){
           if (strcmp(argv[i], "=>") == 0){
                argv[i] = NULL;
                return 1;
-          }else if (strcmp(argv[i], "<=") == 0){
+          }
+          if (strcmp(argv[i], "<=") == 0){
                argv[i] = NULL;
                return 2;
           }         
@@ -97,7 +103,7 @@ int entrada_saida(char **argv, int *file){
 
      /*cria ou abre um arquivo para escrita e associa ele a saida padrão*/    
      if (r == 1){
-          file[0] = open(argv[f-1], O_WRONLY | O_CREAT, 0777);
+          file[0] = open(argv[f-1], O_WRONLY | O_CREAT, 0777); /* cria ou reescreve um arquivo no disco */
           dup2(file[0], 1);
           close(file[0]);
           return 1;         
@@ -105,7 +111,7 @@ int entrada_saida(char **argv, int *file){
 
      /*abre um arquivo para leitura e associa ele a entrada padrão*/    
      if(r == 2){
-          file[0] = open(argv[f-1], O_RDONLY, 0777);
+          file[0] = open(argv[f-1], O_RDONLY, 0777); /* abre um arquivo no disco*/
           if (file[0] == -1){
                exit(1);
           }
@@ -115,7 +121,7 @@ int entrada_saida(char **argv, int *file){
           return 2;
      }
 
-     return 4;
+     return 3;
 }
 
 void  executa(char **argv){
@@ -140,6 +146,7 @@ void  executa(char **argv){
      }
 }
 
+/* Cria dois processos filhos e encaminha a saida de um para a entrada do outro*/
 int executapipe(char **argv1, char **argv2){
      int fd[2];
      int status, file1, file2;
@@ -153,7 +160,7 @@ int executapipe(char **argv1, char **argv2){
      }else if(pid == 0){
           entrada_saida(argv1, &file1);
           close(fd[0]);
-          dup2(fd[1], 1); /*escreve a saida no pipe*/
+          dup2(fd[1], 1); /*escreve na entrada do pipe*/
           execvp(argv1[0], argv1);
      }
 
@@ -164,7 +171,7 @@ int executapipe(char **argv1, char **argv2){
      }else if(pid == 0){
           entrada_saida(argv2, &file2);
           close(fd[1]);
-          dup2(fd[0], 0); /*le a entrada do pipe*/
+          dup2(fd[0], 0); /*le a saida do pipe*/
           execvp(argv2[0], argv2);
      }
 
