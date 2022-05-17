@@ -13,10 +13,11 @@ int main(){
     char comandos[512];
     char *argv[MAX_NUM_PARAMS+1];
     char ***argvv;
-    int i, n, j, k;
+    int i, n, j, k, bg;
     int index[15];
     while(TRUE){
         promptprint();
+        bg = 1;
         j = 0;
         argvv = (char***)malloc(15*sizeof(char**));
         
@@ -25,13 +26,20 @@ int main(){
             index[i] = -1;
         }
         
+        fflush(stdin);
         if(fgets(comandos, sizeof(comandos), stdin) == NULL){/* sair no ctrl D*/
             free(argvv);
             exit(0);
         }
         n = parsecomando(comandos, argv);
 
-        if(argv[0] == NULL){/*continue quando aperta enter sem comandos*/
+        if (strcmp(argv[n], "&") == 0){
+            bg = 0;
+            argv[n] = NULL;
+            n--;
+        }
+        
+        if(argv[0] == NULL){/* continue quando aperta enter sem comandos */
             free(argvv);
             continue;
         }
@@ -46,10 +54,9 @@ int main(){
 
         /* define se usa o pipe ou o processo unico*/
         if (j > 0){
-            executapipe(argvv[0], argvv[1]);
+            executapipe(argvv[0], argvv[1], bg);
         }else
-            executa(argv);
-
+            executa(argv, bg);
         
         for (i = 0; i < n+1; i++){
             free(argv[i]);

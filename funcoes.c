@@ -103,7 +103,7 @@ int entrada_saida(char **argv, int *file){
 
      /*cria ou abre um arquivo para escrita e associa ele a saida padrão*/    
      if (r == 1){
-          file[0] = open(argv[f-1], O_WRONLY | O_CREAT, 0777); /* cria ou reescreve um arquivo no disco */
+          file[0] = open(argv[f-1], O_WRONLY | O_TRUNC | O_CREAT, 0777); /* cria ou reescreve um arquivo no disco */
           dup2(file[0], 1);
           close(file[0]);
           return 1;         
@@ -124,7 +124,7 @@ int entrada_saida(char **argv, int *file){
      return 3;
 }
 
-void  executa(char **argv){
+void  executa(char **argv, int bg){
      pid_t pid;
      int file;
      int status;
@@ -142,12 +142,16 @@ void  executa(char **argv){
      }
      
      else {/* pai */
-          waitpid(pid, &status, 0);
+          if(bg){
+               waitpid(pid, &status, 0);
+          }else{
+
+          }
      }
 }
 
 /* Cria dois processos filhos e encaminha a saida de um para a entrada do outro*/
-int executapipe(char **argv1, char **argv2){
+int executapipe(char **argv1, char **argv2, int bg){
      int fd[2];
      int status, file1, file2;
      pid_t pid;
@@ -178,10 +182,13 @@ int executapipe(char **argv1, char **argv2){
      /*processo pai*/
      close(fd[0]);
      close(fd[1]);
+ 
+     if(bg){
+          waitpid(-1, &status, 0);
+          waitpid(-1, &status, 0);
+     }else{
 
-     waitpid(-1, &status, 0);
-     waitpid(-1, &status, 0);
-
+     }
      return 0;
 }
 
