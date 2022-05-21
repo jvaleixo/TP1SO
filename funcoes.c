@@ -10,7 +10,7 @@
 #include "funcoes.h"
 
 int parsecomando(char *comandos, char **argv){
-     int i = 0; /* cotrola o loop */
+     int i = 0; /* controla o loop */
      char *token; 
      int n = -1; 
      
@@ -20,14 +20,14 @@ int parsecomando(char *comandos, char **argv){
 
      token = strtok(comandos," ");
 
-     /*trasforma a string em um array de argumentos*/    
+     /*transforma a string em um array de argumentos*/    
      while(token && i < MAX_NUM_PARAMS){
           argv[i] = strdup(token);
           i++;
           n++;
           token = strtok(NULL, " ");
      }
-     argv[i] = NULL;
+     argv[i] = NULL;/* a função execvp para quando encontra o parametro NULL na string*/
      return n; /* usado na main para definir o numero de parametros passado para o shell*/
 }
 
@@ -63,17 +63,22 @@ int parsepipe(char ***argvv, char **argv, int *index, int n){
                l++;
           }
      }
-     argvv[k][l] = NULL;
+     argvv[k][l] = NULL;/* a função execvp para quando encontra o parametro NULL na string*/
      index[k] = l;
      
      /* retorna o numero de pipes */
      return j;
 }
 
+/* retornar o numero de redirecionamentos por comando */
 /*retorna o tipo de redirecionamento a ser utilizado*/    
 int redirecionamento(char **argv){
-     int i;
-
+     int i, j;
+     j = 0;
+     for (i = 0; argv[i] != NULL; i++){
+          j++;
+     }
+     
      for (i = 0; argv[i] != NULL; i++){
           if (strcmp(argv[i], "=>") == 0){
                argv[i] = NULL;
@@ -84,7 +89,11 @@ int redirecionamento(char **argv){
                return 2;
           }         
      }
-     return 0;
+
+     if(j){
+          return 3;
+     }
+     return 3;
 }
 
 /*executa do redirecionamendo das entradas e saidas padrão*/    
@@ -95,6 +104,7 @@ int entrada_saida(char **argv, int *file){
      for (i = 0; argv[i] != NULL; i++){
           f++;
      }
+
      r = redirecionamento(argv); 
  
      if (r == 0){
@@ -104,6 +114,10 @@ int entrada_saida(char **argv, int *file){
      /*cria ou abre um arquivo para escrita e associa ele a saida padrão*/    
      if (r == 1){
           file[0] = open(argv[f-1], O_WRONLY | O_TRUNC | O_CREAT, 0777); /* cria ou reescreve um arquivo no disco */
+          if (file[0] == -1){
+               printf("Falha ao escrever ou criar arquivo\n");
+               exit(1);
+          }
           dup2(file[0], 1);
           close(file[0]);
           return 1;         
@@ -113,6 +127,7 @@ int entrada_saida(char **argv, int *file){
      if(r == 2){
           file[0] = open(argv[f-1], O_RDONLY, 0777); /* abre um arquivo no disco*/
           if (file[0] == -1){
+               printf("Falha ao abrir arquivo\n");
                exit(1);
           }
           
@@ -145,7 +160,7 @@ void  executa(char **argv, int bg){
           if(bg){
                waitpid(pid, &status, 0);
           }else{
-
+               
           }
      }
 }

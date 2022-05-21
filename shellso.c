@@ -10,11 +10,11 @@
 #define TRUE 1 
 
 int main(){
-    char comandos[512];
-    char *argv[MAX_NUM_PARAMS+1];
-    char ***argvv;
-    int i, n, j, k, bg;
-    int index[15];
+    char comandos[512]; /* ler do usuario*/
+    char *argv[MAX_NUM_PARAMS+1]; /* comandos separados*/
+    char ***argvv; 
+    int i, n, j, k, bg; /*n = retorno numero de comandos que o usuario digitou, j = numero de pipes, bg = define se o processo vai para o backgroud*/
+    int index[15]; /* salva o numero de comandos por pipe*/
     while(TRUE){
         promptprint();
         bg = 1;
@@ -57,6 +57,7 @@ int main(){
             executapipe(argvv[0], argvv[1], bg);
         }else
             executa(argv, bg);
+        
         
         for (i = 0; i < n+1; i++){
             free(argv[i]);
