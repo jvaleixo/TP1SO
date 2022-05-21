@@ -18,20 +18,20 @@ int parsecomando(char *comandos, char **argv){
           comandos[strlen(comandos)-1] = '\0';
      }
 
-     token = strtok(comandos," ");
+     token = strtok(comandos," "); /*divide baseado no espaco entre os comandos*/
 
      /*transforma a string em um array de argumentos*/    
      while(token && i < MAX_NUM_PARAMS){
           argv[i] = strdup(token);
           i++;
           n++;
-          token = strtok(NULL, " ");
+          token = strtok(NULL, " "); /*chamada com NULL pois apos a primeira chamada se for utilizada a propria string seria criado um loop infinito */
      }
      argv[i] = NULL;/* a função execvp para quando encontra o parametro NULL na string*/
      return n; /* usado na main para definir o numero de parametros passado para o shell*/
 }
 
-/* separa os argumentos em pipes para serem execultados*/    
+/* separa os argumentos em pipes para serem executados*/    
 int parsepipe(char ***argvv, char **argv, int *index, int n){
      int i, j, k, l;
      j = 0;
@@ -150,7 +150,7 @@ void  executa(char **argv, int bg){
      }
      else if (pid == 0) {/*filho*/
           entrada_saida(argv, &file);
-          if (execvp(argv[0], argv) < 0) {/* execulta o comando */
+          if (execvp(argv[0], argv) < 0) {/* executa o comando */
                printf("erro no exec\n");
                exit(1);
           }
@@ -207,6 +207,7 @@ int executapipe(char **argv1, char **argv2, int bg){
      return 0;
 }
 
+/* apenas o print da espera do shell */
 void promptprint(void){
     printf("$ ");
 }
