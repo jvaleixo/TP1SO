@@ -89,11 +89,7 @@ int redirecionamento(char **argv){
                return 2;
           }         
      }
-
-     if(j){
-          return 3;
-     }
-     return 3;
+     return 0;
 }
 
 /*executa do redirecionamendo das entradas e saidas padrão*/    
@@ -139,6 +135,17 @@ int entrada_saida(char **argv, int *file){
      return 3;
 }
 
+int n_redirecionamentos(char **argv, int n){
+     int i, r;
+     r = 0;
+     for (i = 0; i < n; i++){
+          if(strcmp(argv[i], "=>") || strcmp(argv[i], "<="))
+               r++;
+     }
+     return r;
+}
+
+
 void  executa(char **argv, int bg){
      pid_t pid;
      int file;
@@ -151,7 +158,7 @@ void  executa(char **argv, int bg){
      else if (pid == 0) {/*filho*/
           entrada_saida(argv, &file);
           if (execvp(argv[0], argv) < 0) {/* executa o comando */
-               printf("erro no exec\n");
+               printf("Comando não encontrado\n");
                exit(1);
           }
      }
@@ -180,7 +187,9 @@ int executapipe(char **argv1, char **argv2, int bg){
           entrada_saida(argv1, &file1);
           close(fd[0]);
           dup2(fd[1], 1); /*escreve na entrada do pipe*/
-          execvp(argv1[0], argv1);
+          if(execvp(argv1[0], argv1) < 0){
+               printf("Comando não encontrado\n");
+          }
      }
 
      /*processo filho 2*/
@@ -191,7 +200,9 @@ int executapipe(char **argv1, char **argv2, int bg){
           entrada_saida(argv2, &file2);
           close(fd[1]);
           dup2(fd[0], 0); /*le a saida do pipe*/
-          execvp(argv2[0], argv2);
+          if(execvp(argv2[0], argv2) < 0){
+               printf("Comando não encontrado\n");
+          }
      }
 
      /*processo pai*/
