@@ -188,7 +188,9 @@ void  executa(char **argv, int bg){
      else if (pid == 0) {/*filho*/
           r = n_redirecionamentos(argv);
           if(r >= 2){
-               entrada_saida2(argv, &file1, &file2);
+               if(entrada_saida2(argv, &file1, &file2) == 1){
+                    exit(1);
+               }
           }else
                entrada_saida(argv, &file1);
           if (execvp(argv[0], argv) < 0) {/* executa o comando */

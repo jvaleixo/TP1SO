@@ -18,5 +18,6 @@ void executa(char **argv, int bg);
 void promptprint(void);
 int redirecionamentos(char **argv);
 int entrada_saida(char **argv, int *file);
+int entrada_saida2(char **argv, int *file1, int *file2);
 int n_redirecionamentos(char **argv);
 #endif
