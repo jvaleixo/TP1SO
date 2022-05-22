@@ -135,28 +135,62 @@ int entrada_saida(char **argv, int *file){
      return 3;
 }
 
-int n_redirecionamentos(char **argv, int n){
+int entrada_saida2(char **argv, int *file1, int *file2){
+     int n, f, i;
+     n = 0;
+     for (i = 0; argv[i] != NULL; i++){
+          if(strcmp(argv[i], "=>") == 0 || strcmp(argv[i], "<=") == 0){
+               argv[i] = NULL;
+               f = n-1;
+          }
+          n++;
+     }
+     
+     /*abre um arquivo para leitura e associa ele a entrada padrão*/    
+     file1[0] = open(argv[f], O_RDONLY, 0777); /* abre um arquivo no disco*/
+     if (file1[0] == -1){
+          printf("Falha ao abrir arquivo\n");
+          return 1;
+     }
+     dup2(file1[0], 0);
+     close(file1[0]);
+
+     /*cria ou abre um arquivo para escrita e associa ele a saida padrão*/    
+     file2[0] = open(argv[n-1], O_WRONLY | O_TRUNC | O_CREAT, 0777); /* cria ou reescreve um arquivo no disco */
+     if (file2[0] == -1){
+          printf("Falha ao escrever ou criar arquivo\n");
+          return 2;
+     }
+     dup2(file2[0], 1);
+     close(file2[0]);
+
+     return 0;
+}
+
+int n_redirecionamentos(char **argv){
      int i, r;
      r = 0;
-     for (i = 0; i < n; i++){
-          if(strcmp(argv[i], "=>") || strcmp(argv[i], "<="))
+     for (i = 0; argv[i] != NULL; i++){
+          if((strcmp(argv[i], "=>") == 0) || (strcmp(argv[i], "<=") == 0))
                r++;
      }
      return r;
 }
 
-
 void  executa(char **argv, int bg){
      pid_t pid;
-     int file;
+     int file1, file2, r;
      int status;
-     
      if ((pid = fork()) < 0) {/*usa o fork*/
           printf("erro no fork\n");
           exit(1);
      }
      else if (pid == 0) {/*filho*/
-          entrada_saida(argv, &file);
+          r = n_redirecionamentos(argv);
+          if(r >= 2){
+               entrada_saida2(argv, &file1, &file2);
+          }else
+               entrada_saida(argv, &file1);
           if (execvp(argv[0], argv) < 0) {/* executa o comando */
                printf("Comando não encontrado\n");
                exit(1);
