@@ -19,6 +19,7 @@ int main(){
         promptprint(); /* funcao para imprimir o '$ ' do shell*/
         bg = 1;
         j = 0;
+        argv[0] = NULL;
         argvv = (char***)malloc(15*sizeof(char**)); /*alocando memoria para o recebimento dos comandos*/
         
         for (i = 0; i < 15; i++)
@@ -31,17 +32,18 @@ int main(){
             free(argvv); /*liberar memoria*/
             exit(0); /* fecha o programa*/
         }
+
+        if(comandos[0] == '\n'){/* continue quando aperta enter sem comandos */
+            free(argvv); /*liberar memoria*/
+            continue;
+        }
+
         n = parsecomando(comandos, argv); /* faz a divisão para identificar os comandos passados pelo usuario*/
 
         if (strcmp(argv[n], "&") == 0){ /* identifica alguma parte do argumeto eh &*/
             bg = 0; 
             argv[n] = NULL; /* posicao do argumento se torna NULL para facilitar no resto do programa */
             n--;
-        }
-        
-        if(argv[0] == NULL){/* continue quando aperta enter sem comandos */
-            free(argvv); /*liberar memoria*/
-            continue;
         }
 
         if (strcmp(argv[0], "fim") == 0){/* sai do programa*/

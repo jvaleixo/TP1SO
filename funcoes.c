@@ -189,6 +189,7 @@ int executapipe(char **argv1, char **argv2, int bg){
           dup2(fd[1], 1); /*escreve na entrada do pipe*/
           if(execvp(argv1[0], argv1) < 0){
                printf("Comando não encontrado\n");
+               exit(1);
           }
      }
 
@@ -202,6 +203,7 @@ int executapipe(char **argv1, char **argv2, int bg){
           dup2(fd[0], 0); /*le a saida do pipe*/
           if(execvp(argv2[0], argv2) < 0){
                printf("Comando não encontrado\n");
+               exit(1);
           }
      }
 
